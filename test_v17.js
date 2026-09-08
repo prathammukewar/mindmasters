@@ -161,7 +161,7 @@ const path = require('path');
   // ---- back to teacher: paste result code ----
   await page.click('#bottomnav button[data-nav="profile"]');
   await page.waitForTimeout(300);
-  await page.click('#teachBtn');                  // logs out to the account chooser
+  await page.click('#logoutBtn');                 // logs out to the account chooser
   await page.waitForTimeout(3000);
   await page.click('.logincard[data-uid^="t"]');   // Coach P, password protected
   await page.waitForTimeout(400);

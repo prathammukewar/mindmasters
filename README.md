@@ -3,7 +3,7 @@
 Math and chess training for K-8 competition students, in one HTML file that
 runs entirely in the browser.
 
-**Live at [mathmaster1296.github.io/mindmasters](https://mathmaster1296.github.io/mindmasters/).**
+**Live at [prathammukewar.github.io/mindmasters](https://prathammukewar.github.io/mindmasters/).**
 
 I coach North South Foundation math and CheckMates chess, and I built this for
 my students. Anyone is welcome to use it.

@@ -99,26 +99,26 @@ function buildTodayCard() {
   const asgDone = !!(S.asgToday && S.asgToday.d === today && S.asgToday.n > 0);
   const chestReady = dailyDone && solveDone;
   const chestOpen = S.chestOpenOn === today;
-  const row = (done, id, label, right) =>
-    '<div class="todayrow' + (done ? " done" : "") + '"' + (id && !done ? ' id="' + id + '" style="cursor:pointer"' : '') + '>' +
+  const row = (done, id, label, right, tipText) =>
+    '<div class="todayrow' + (done ? " done" : "") + '"' + (id && !done ? ' id="' + id + '" style="cursor:pointer"' : '') + (tipText ? ' data-tip="' + tipText + '"' : '') + '>' +
       '<span class="tdchk">' + (done ? "✓" : "") + '</span>' +
       '<span style="flex:1;min-width:0">' + label + '</span>' + (right || "") +
     '</div>';
-  let rows = row(dailyDone, "tdDaily", "Daily Challenge", dailyDone ? "" : '<span class="tdgo">Play ›</span>');
+  let rows = row(dailyDone, "tdDaily", "Daily Challenge", dailyDone ? "" : '<span class="tdgo">Play ›</span>', "One special problem each day, worth double XP");
   rows += row(solveDone, "tdSolve", "Solve 10 problems",
-    '<span class="num" style="font-weight:700;color:var(--gold)">' + Math.min(cnt, 10) + '/10</span>');
+    '<span class="num" style="font-weight:700;color:var(--gold)">' + Math.min(cnt, 10) + '/10</span>', "Any ten correct answers today count toward this");
   if (due.length || revDone) {
     rows += row(revDone, "tdReview", "Smart Review" + (revDone ? "" : " · " + due.length + " ready"),
-      revDone ? '<span class="tdgo" style="color:var(--green)">chest +5</span>' : '<span class="tdgo">chest +5 ›</span>');
+      revDone ? '<span class="tdgo" style="color:var(--green)">chest +5</span>' : '<span class="tdgo">chest +5 ›</span>', "Problems you missed come back the next day. Solving one here adds 5 coins to the chest");
   }
   if (openA || asgDone) {
     rows += row(asgDone, "tdAsg", "Finish an assignment" + (asgDone || !openA ? "" : " · " + openA + " open"),
-      asgDone ? '<span class="tdgo" style="color:var(--green)">chest +5</span>' : '<span class="tdgo">chest +5 ›</span>');
+      asgDone ? '<span class="tdgo" style="color:var(--green)">chest +5</span>' : '<span class="tdgo">chest +5 ›</span>', "Work your teacher assigned. Finishing one adds 5 coins to the chest");
   }
   const chest = chestOpen
     ? '<div class="chestrow opened"><span class="chesticon">🎁</span><span style="flex:1">Chest opened. A new one arrives tomorrow.</span></div>'
     : chestReady
-      ? '<div class="chestrow ready" id="tdChest" style="cursor:pointer"><span class="chesticon">🎁</span><span style="flex:1"><b>Your chest is ready.</b> Tap to open it.</span><span class="tdgo">Open ›</span></div>'
+      ? '<div class="chestrow ready" id="tdChest" style="cursor:pointer" data-tip="A mystery chest. Open it for coins, freezes or power-ups"><span class="chesticon">🎁</span><span style="flex:1"><b>Your chest is ready.</b> Tap to open it.</span><span class="tdgo">Open ›</span></div>'
       : '<div class="chestrow"><span class="chesticon">🎁</span><span style="flex:1">Finish the Daily Challenge and solve 10 to unlock today\'s chest.</span></div>';
   const repair = (S.repairOffer && S.repairOffer.d === today)
     ? '<div class="card repaircard" id="tdRepair" style="cursor:pointer">' +
@@ -126,22 +126,22 @@ function buildTodayCard() {
         '<span class="tdgo" style="color:var(--gold)">Repair · 200 coins, today only ›</span></div>'
     : "";
   const freezeBtn = (S.freezes || 0) < 2
-    ? ' <button class="btn ghost small" id="tdFreeze" style="padding:4px 10px;font-size:11.5px">Freeze · 150</button>' : "";
+    ? ' <button class="btn ghost small" id="tdFreeze" style="padding:4px 10px;font-size:11.5px" data-tip="Buy a streak freeze for 150 coins. It protects your streak on one day you miss">Freeze · 150</button>' : "";
   return repair +
     '<div id="annSlot">' + annBannerHtml() + '</div>' +
     '<div class="card todaycard">' +
       '<div class="todayhead">' +
         '<b>Today' + tip("Your daily checklist. Complete the Daily Challenge and solve 10 problems to unlock the chest. Review and assignment work adds bonus coins to it.") + '</b>' +
-        '<span class="todaystreak">🔥 ' + (S.streak || 0) + '<span class="tdfrz">❄ ' + (S.freezes || 0) + '</span>' +
-          '<span class="tdfrz" style="color:var(--teal)" title="Fifty-Fifty hints: cross out two wrong choices">✂ ' + itemsOf().fifty + '</span>' +
-          '<span class="tdfrz" style="color:var(--purple)" title="Piece Hints: reveal the winning piece">♞ ' + itemsOf().hintP + '</span>' + freezeBtn + '</span>' +
+        '<span class="todaystreak"><span data-tip="Your streak: days in a row with at least one solve" aria-label="streak">🔥 ' + (S.streak || 0) + '</span><span class="tdfrz" data-tip="Streak freezes you own. A freeze saves your streak on a day you miss" aria-label="streak freezes">❄ ' + (S.freezes || 0) + '</span>' +
+          '<span class="tdfrz" style="color:var(--teal)" data-tip="Fifty-Fifty power-ups you own. One crosses out two wrong choices" aria-label="Fifty-Fifty power-ups">✂ ' + itemsOf().fifty + '</span>' +
+          '<span class="tdfrz" style="color:var(--purple)" data-tip="Piece Hint power-ups you own. One reveals which piece wins the puzzle" aria-label="Piece Hint power-ups">♞ ' + itemsOf().hintP + '</span>' + freezeBtn + '</span>' +
       '</div>' +
       rows + chest +
       '<div class="todayseason">' + seasonLabel((S.season || {}).id || todayStr().slice(0, 7)) + ' Season' +
         tip("Every point of XP also counts as season XP. When the month ends, season XP becomes coins, up to 500. Reach 1500 season XP for the exclusive Champion Aura.") +
         '<span class="num" style="margin-left:auto;font-weight:700;color:var(--purple)">' + ((S.season && S.season.xp) || 0) + ' XP</span>' +
       '</div>' +
-      '<div class="todayasglink" id="tdAsgAll">Assignments' + (openA ? ' · <b style="color:var(--gold)">' + openA + ' open</b>' : '') +
+      '<div class="todayasglink" id="tdAsgAll" data-tip="Every assignment from your teachers, open or finished">Assignments' + (openA ? ' · <b style="color:var(--gold)">' + openA + ' open</b>' : '') +
         '<span style="margin-left:auto;color:var(--muted)">›</span></div>' +
     '</div>';
 }

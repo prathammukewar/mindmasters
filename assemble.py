@@ -12,7 +12,7 @@ PARTS = [
     "part3_chessdata.js", "part6_gendata.js", "part7_vault.js", "part8_mined.js",
     "part10_textbank.js", "part13_lichess.js", "part14_aops.js", "part15_teacher.js",
     "part16_studio.js", "part17_retention.js", "part18_teacherpro.js",
-    "part19_auth.js", "part20_pwa.js", "part4_app.js",
+    "part19_auth.js", "part20_pwa.js", "part21_ux.js", "part4_app.js",
 ]
 
 head = open("part1_head.html").read()

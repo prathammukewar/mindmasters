@@ -126,12 +126,12 @@ const path = require('path');
     confetti(20);
     return { cls: document.body.classList.contains('calm'), pref: S.reduceMotion, bits: document.querySelectorAll('.confetti').length, label: document.getElementById('motionBtn').textContent };
   });
-  (calm.cls && calm.pref === 1 && calm.bits === 0 && calm.label === 'Animations: off')
+  (calm.cls && calm.pref === 1 && calm.bits === 0 && calm.label === 'Off')
     ? ok('Animations off: calm class applied and confetti suppressed') : fail('calm: ' + JSON.stringify(calm));
   await page.click('#textBtn');
   await page.waitForTimeout(300);
   const big = await page.evaluate(() => ({ cls: document.body.classList.contains('bigtext'), zoom: getComputedStyle(document.getElementById('app')).zoom, label: document.getElementById('textBtn').textContent }));
-  (big.cls && parseFloat(big.zoom) > 1 && big.label === 'Text size: large') ? ok('Text size large applies zoom ' + big.zoom) : fail('bigtext: ' + JSON.stringify(big));
+  (big.cls && parseFloat(big.zoom) > 1 && big.label === 'Large') ? ok('Text size large applies zoom ' + big.zoom) : fail('bigtext: ' + JSON.stringify(big));
   await page.reload();
   await page.waitForTimeout(1200);
   const kept = await page.evaluate(() => ({ calm: document.body.classList.contains('calm'), big: document.body.classList.contains('bigtext') }));

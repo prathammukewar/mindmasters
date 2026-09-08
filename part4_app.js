@@ -402,7 +402,7 @@ const DEFAULT_STATE = {
   duelUsed: {}, lichessSolved: 0,
   mathElo: 800, chessElo: 800, mathEloGames: 0, chessEloGames: 0,
   mathEloPeak: 800, chessEloPeak: 800, mathHist: [], chessHist: [], a2hsTip: 0,
-  reduceMotion: 0, bigText: 0,
+  reduceMotion: 0, bigText: 0, tourDone: 0,
   todayDate: "", todayCount: 0, dailyGoalHit: "", perfectSessions: 0,
   trainBias: "m", reviewQueue: {}, testBest: {}, testsTaken: 0, reviewCleared: 0,
   lbPeers: {}, cloud: { url: "", cls: "" },
@@ -812,6 +812,7 @@ document.getElementById("bottomnav").addEventListener("click", e => {
 
 const ROOT = document.getElementById("screen-root");
 function setScreen(html) {
+  if (typeof hideTooltip === "function") hideTooltip();
   ROOT.innerHTML = '<div class="screen">' + html + '</div>';
   a11yEnhance(ROOT);
   window.scrollTo(0, 0);
@@ -1087,10 +1088,10 @@ function showHome() {
         '<div class="xpbar"><div style="width:' + pct + '%"></div></div>' +
         '<div class="xpbar-note">' + S.xp + ' XP · ' + (li.ceil - S.xp) + ' XP to Level ' + (li.lvl + 1) + '</div>' +
         '<div style="display:flex;gap:8px;margin-top:9px;flex-wrap:wrap">' +
-          '<div class="chip" style="color:var(--blue)"><span class="num">Math ' + (S.mathElo || 800) + ((S.mathEloGames || 0) < 12 ? "?" : "") + '</span></div>' +
-          '<div class="chip" style="color:var(--purple)"><span class="num">Chess ' + (S.chessElo || 800) + ((S.chessEloGames || 0) < 12 ? "?" : "") + '</span></div>' +
+          '<div class="chip" data-tip="Your math rating. It rises when you beat problems and falls when they beat you. A question mark means it is still settling." style="color:var(--blue)"><span class="num">Math ' + (S.mathElo || 800) + ((S.mathEloGames || 0) < 12 ? "?" : "") + '</span></div>' +
+          '<div class="chip" data-tip="Your chess rating, from puzzles and drills. A question mark means it is still settling." style="color:var(--purple)"><span class="num">Chess ' + (S.chessElo || 800) + ((S.chessEloGames || 0) < 12 ? "?" : "") + '</span></div>' +
           (function () { const r = mindRating(); return r.ready
-            ? '<div class="chip" style="color:var(--gold)"><span class="num">Mind ' + r.val + '</span></div>' : ""; })() +
+            ? '<div class="chip" data-tip="Mind Rating: the average of your math and chess ratings." style="color:var(--gold)"><span class="num">Mind ' + r.val + '</span></div>' : ""; })() +
         '</div>' +
       '</div>' +
     '</div>' +
@@ -1107,34 +1108,34 @@ function showHome() {
     buildTodayCard() +
     '<div class="section-label">Your Arenas</div>' +
     '<div class="trackgrid">' +
-      '<div class="track math" id="goMath" role="button" tabindex="0">' +
+      '<div class="track math" id="goMath" role="button" tabindex="0" data-tip="Open the Math Arena: practice by contest or by topic">' +
         '<div class="tico num">Σ</div><div class="torg">North South Foundation</div><h3>Math Arena</h3>' +
         '<p>' + ms.total.toLocaleString() + ' problems, school level to olympiad</p>' +
         '<div class="tprog num">' + ms.done + ' / ' + ms.total.toLocaleString() + ' solved</div>' +
-        '<div class="trainrow"><button class="btn gold small" id="trainMath">Train</button><span class="trainnote">10 problems picked for you</span></div>' +
+        '<div class="trainrow"><button class="btn gold small" id="trainMath" data-tip="Start ten math problems picked for your rating">Train</button><span class="trainnote">10 problems picked for you</span></div>' +
       '</div>' +
-      '<div class="track chess" id="goChess" role="button" tabindex="0">' +
+      '<div class="track chess" id="goChess" role="button" tabindex="0" data-tip="Open the Chess Arena: puzzles, drills and full games">' +
         '<div class="tico num">♞</div><div class="torg">CheckMates</div><h3>Chess Arena</h3>' +
         '<p>' + cs.total.toLocaleString() + ' puzzles, beginner to grandmaster</p>' +
         '<div class="tprog num">' + cs.done + ' / ' + cs.total.toLocaleString() + ' solved</div>' +
-        '<div class="trainrow"><button class="btn gold small" id="trainChess">Train</button><span class="trainnote">10 puzzles picked for you</span></div>' +
+        '<div class="trainrow"><button class="btn gold small" id="trainChess" data-tip="Start ten chess puzzles picked for your rating">Train</button><span class="trainnote">10 puzzles picked for you</span></div>' +
       '</div>' +
     '</div>' +
     '<div class="section-label">Battle Zone</div>' +
     '<div class="battlegrid">' +
-      '<button class="track duel" id="goDuel">' +
+      '<button class="track duel" id="goDuel" data-tip="Race a friend through timed math problems on one device">' +
         '<div class="tico num">vs</div><div class="torg">Head to Head</div><h3>Math Duel</h3>' +
         '<p>Race a friend through timed problems</p>' +
         '<div class="tprog num">' + S.duelsPlayed + ' duels fought</div>' +
       '</button>' +
-      '<button class="track match" id="goMatch">' +
+      '<button class="track match" id="goMatch" data-tip="Play a full chess game, passing the device back and forth">' +
         '<div class="tico num">♟</div><div class="torg">Over the Board</div><h3>Chess Match</h3>' +
         '<p>Full two-player chess, pass and play</p>' +
         '<div class="tprog num">' + S.gamesPlayed + ' games finished</div>' +
       '</button>' +
     '</div>' +
     '<div class="section-label">Trophy Case</div>' +
-    '<div class="card" style="display:flex;align-items:center;gap:12px;cursor:pointer;padding:13px 18px" id="goBadges">' +
+    '<div class="card" style="display:flex;align-items:center;gap:12px;cursor:pointer;padding:13px 18px" id="goBadges" data-tip="See every badge, earned or still waiting">' +
       '<b style="flex:1">Badges' + tip("Every badge family has five tiers: Bronze, Silver, Gold, Platinum, Diamond. Keep training to climb them.") + '</b>' +
       '<span class="num" style="font-weight:700">' + earnedUnitCount() + ' / ' + badgeUnitCount() + '</span>' +
       '<span style="color:var(--muted)">›</span>' +
@@ -1149,7 +1150,8 @@ function showHome() {
   document.getElementById("goBadges").addEventListener("click", showBadges);
   bindTodayCard();
   const hv = document.getElementById("heroAv");
-  if (hv) hv.addEventListener("click", showStudio);
+  if (hv) { hv.addEventListener("click", showStudio); hv.setAttribute("data-tip", "Tap to visit the Avatar Studio"); }
+  if (typeof maybeHomeTour === "function") maybeHomeTour();
 }
 
 function showTrack(track) {
@@ -1183,7 +1185,7 @@ function topicCardHtml(track, t) {
   const complete = c >= items.length;
   return '<button class="topic" data-topic="' + t.id + '">' +
     '<div class="tpico" style="background:' + t.color + '">' + tGlyph(t) + '</div>' +
-    '<div class="tpmeta"><h4>' + t.name + ' <span class="pill d' + t.diff + '">' + ["", "STARTER", "SKILLED", "ADVANCED", "ELITE"][t.diff] + '</span></h4>' +
+    '<div class="tpmeta"><h4>' + t.name + ' <span class="pill d' + t.diff + '" data-tip="' + ["", "Starter: good first steps at any level", "Skilled: for students with some contest practice", "Advanced: hard problems for experienced competitors", "Elite: the toughest problems in the app"][t.diff] + '">' + ["", "STARTER", "SKILLED", "ADVANCED", "ELITE"][t.diff] + '</span></h4>' +
     '<div class="tpsub">' + t.sub + '</div>' +
     '<div class="tpbar"><div style="width:' + pct + '%"></div></div></div>' +
     '<div class="tpstat">' + (complete ? '<span class="done">done</span>' : c + "/" + items.length) + '</div>' +
@@ -1399,9 +1401,9 @@ function renderQuestion(withLesson) {
   setScreen(
     '<div class="quizhead">' +
       '<button class="btn ghost small" id="quitBtn" aria-label="Leave this session">✕</button>' +
-      '<div class="qprogress" role="progressbar" aria-label="Session progress" aria-valuemin="0" aria-valuemax="' + total + '" aria-valuenow="' + Q.i + '"><div style="width:' + Math.round((Q.i / total) * 100) + '%"></div></div>' +
+      '<div class="qprogress" data-tip="Your place in this session" role="progressbar" aria-label="Session progress" aria-valuemin="0" aria-valuemax="' + total + '" aria-valuenow="' + Q.i + '"><div style="width:' + Math.round((Q.i / total) * 100) + '%"></div></div>' +
       '<div class="qcount" aria-label="Question ' + (Q.i + 1) + ' of ' + total + '">' + (Q.i + 1) + '/' + total + '</div>' +
-      (S.combo >= 2 ? '<div class="combo num">×' + S.combo + '</div>' : '') +
+      (S.combo >= 2 ? '<div class="combo num" data-tip="Combo: correct answers in a row. Three or more adds bonus XP to every solve.">×' + S.combo + '</div>' : '') +
     '</div>' +
     (withLesson && Q.lesson ? '<div class="lessonbox" style="padding:9px 14px;font-size:12.5px"><b>' + esc(Q.name) + '</b>' + tip(Q.lesson) + '</div>' : '') +
     (Q.isDaily ? '<div class="lessonbox" style="border-left-color:var(--gold)"><b>Daily Challenge</b> from ' + esc(Q.dailyFrom) + '. This question is worth double XP.</div>' : '') +
@@ -1409,12 +1411,13 @@ function renderQuestion(withLesson) {
       const er = item.er || 1200;
       const d20 = Math.max(1, Math.min(20, Math.round(10 + (er - eloOf(Q.track)) / 60)));
       const col = d20 <= 7 ? "var(--green)" : d20 <= 13 ? "var(--gold)" : "var(--red)";
-      return '<div class="probmeta"><span>Problem rating <b class="num">' + er + '</b></span>' +
-        '<span style="color:' + col + '">Difficulty <b>' + d20 + '</b>/20 for you</span></div>';
+      return '<div class="probmeta"><span data-tip="How hard this problem is, on the same scale as your rating.">Problem rating <b class="num">' + er + '</b></span>' +
+        '<span data-tip="Difficulty for you: 10 is an even match with your rating, lower is easier, higher is a stretch." style="color:' + col + '">Difficulty <b>' + d20 + '</b>/20 for you</span></div>';
     })() +
     '<div class="card question-card">' + inner + '</div>' +
     '<div class="feedback" id="feedback" role="status" aria-live="polite"></div>' +
     '<div class="quizfoot"><button class="btn hidden" id="nextBtn">Next →</button></div>' +
+    '<div class="keyhint">Keyboard: press A to E to pick a choice, Enter to submit or move on</div>' +
     (Q.replayAll ? '<p class="sub" style="text-align:center">You have solved every question here. This review session grants a reduced XP bonus.</p>' : '')
   );
   document.getElementById("quitBtn").addEventListener("click", () => {
@@ -1640,10 +1643,10 @@ function showResults() {
       '<h2>' + headline + '</h2>' +
       '<div class="score">' + esc(Q.name) + ' · ' + Q.correctThisRun + ' / ' + total + ' correct</div>' +
       '<div class="rewards">' +
-        '<div class="reward"><div class="rv" style="color:' + (eloDelta >= 0 ? "var(--green)" : "var(--red)") + '">' + (eloDelta >= 0 ? "+" : "") + eloDelta + '</div><div class="rl">rating change</div></div>' +
-        '<div class="reward"><div class="rv">' + eloNow + '</div><div class="rl">' + (Q.track === "math" ? "math" : "chess") + ' rating</div></div>' +
-        '<div class="reward"><div class="rv">+' + Q.xpThisRun + '</div><div class="rl">XP earned</div></div>' +
-        '<div class="reward"><div class="rv">' + (S.todayDate === todayStr() ? S.todayCount : 0) + '/10</div><div class="rl">daily goal</div></div>' +
+        '<div class="reward" data-tip="How much your rating moved during this session"><div class="rv" style="color:' + (eloDelta >= 0 ? "var(--green)" : "var(--red)") + '">' + (eloDelta >= 0 ? "+" : "") + eloDelta + '</div><div class="rl">rating change</div></div>' +
+        '<div class="reward" data-tip="Your rating right now"><div class="rv">' + eloNow + '</div><div class="rl">' + (Q.track === "math" ? "math" : "chess") + ' rating</div></div>' +
+        '<div class="reward" data-tip="XP earned this session. XP raises your level."><div class="rv">+' + Q.xpThisRun + '</div><div class="rl">XP earned</div></div>' +
+        '<div class="reward" data-tip="Solve ten problems in a day to finish the daily goal and earn bonus XP"><div class="rv">' + (S.todayDate === todayStr() ? S.todayCount : 0) + '/10</div><div class="rl">daily goal</div></div>' +
       '</div>' +
       tomorrowHookHtml() +
       '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">' +
@@ -2205,10 +2208,10 @@ function showBattle() {
     '<h1 class="title">Battle Zone</h1>' +
     '<p class="sub">Play head to head on one device.</p>' +
     '<div class="battlegrid" style="margin-top:16px">' +
-      '<button class="track duel" id="goDuel"><div class="tico num">vs</div><div class="torg">Head to Head</div><h3>Math Duel</h3>' +
+      '<button class="track duel" id="goDuel" data-tip="Race a friend through timed math problems on one device"><div class="tico num">vs</div><div class="torg">Head to Head</div><h3>Math Duel</h3>' +
       '<p>Both players race the clock on problems of equal difficulty.</p>' +
       '<div class="tprog num">' + S.duelsPlayed + ' fought · ' + S.duelWins + ' won by ' + esc(S.name) + '</div></button>' +
-      '<button class="track match" id="goMatch"><div class="tico num">♟</div><div class="torg">Over the Board</div><h3>Chess Match</h3>' +
+      '<button class="track match" id="goMatch" data-tip="Play a full chess game, passing the device back and forth"><div class="tico num">♟</div><div class="torg">Over the Board</div><h3>Chess Match</h3>' +
       '<p>Complete chess with every rule, including castling and en passant.</p>' +
       '<div class="tprog num">' + S.gamesPlayed + ' games finished</div></button>' +
     '</div>' +
@@ -2844,8 +2847,13 @@ function showProfile() {
   const li = levelInfo(S.xp);
   const acc = S.answeredTotal ? ((S.correctTotal / S.answeredTotal) * 100).toFixed(1) : "0.0";
   const ms = trackStats("math"), cs = trackStats("chess");
-  const tile = (v, l, c) => '<div class="stattile"><div class="sv" style="color:' + (c || "var(--ink)") + '">' + v + '</div><div class="sl">' + l + '</div></div>';
+  const tile = (v, l, c, t) => '<div class="stattile"' + (t ? ' data-tip="' + t + '"' : '') + '><div class="sv" style="color:' + (c || "var(--ink)") + '">' + v + '</div><div class="sl">' + l + '</div></div>';
   const secLab = t => '<div class="section-label">' + t + '</div>';
+  const hasPw = !!(typeof authActive === "function" && authActive() && authActive().hash);
+  const setRow = (ico, title, sub, id, label, gold, danger) =>
+    '<div class="setrow' + (danger ? " danger" : "") + '"><span class="sico" aria-hidden="true">' + ico + '</span>' +
+    '<div class="stext"><div class="stitle">' + title + '</div>' + (sub ? '<div class="ssub">' + sub + '</div>' : '') + '</div>' +
+    '<button class="btn ' + (gold ? "gold" : "ghost") + ' small" id="' + id + '" aria-label="' + title + ': ' + label + '">' + label + '</button></div>';
   const bestTest = (function () {
     let best = null;
     for (const [name, b] of Object.entries(S.testBest || {})) if (!best || b.v > best.v) best = Object.assign({ name }, b);
@@ -2872,66 +2880,67 @@ function showProfile() {
     })() +
     secLab('Ratings') +
     '<div class="statgrid">' +
-      tile(S.mathElo || 800, 'Math Rating', 'var(--blue)') +
-      tile(S.chessElo || 800, 'Chess Rating', 'var(--purple)') +
-      tile(S.mathEloPeak || 800, 'Peak Math', 'var(--blue)') +
-      tile(S.chessEloPeak || 800, 'Peak Chess', 'var(--purple)') +
+      tile(S.mathElo || 800, 'Math Rating', 'var(--blue)', 'How strong you are at math right now. Beat harder problems to raise it.') +
+      tile(S.chessElo || 800, 'Chess Rating', 'var(--purple)', 'How strong you are at chess puzzles right now.') +
+      tile(S.mathEloPeak || 800, 'Peak Math', 'var(--blue)', 'The highest your math rating has ever reached.') +
+      tile(S.chessEloPeak || 800, 'Peak Chess', 'var(--purple)', 'The highest your chess rating has ever reached.') +
     '</div>' +
     ratingChartHtml() +
     secLab('Solving') +
     accuracyPieHtml() +
     '<div class="statgrid">' +
-      tile(S.correctTotal, 'Correct', 'var(--green)') +
-      tile(acc + '%', 'Accuracy', 'var(--blue)') +
-      tile(ms.done.toLocaleString(), 'Math Solved', 'var(--blue)') +
-      tile(cs.done.toLocaleString(), 'Chess Solved', 'var(--purple)') +
-      tile(Object.keys(S.aimeSolved).length, 'AIME Solved', 'var(--orange)') +
-      tile(Object.keys(S.matesSolved).length, 'Checkmates', 'var(--red)') +
-      tile(S.hardSolved || 0, 'Giant Slays' + '', 'var(--gold)') +
-      tile(S.bestScalp || '–', 'Hardest Solve', 'var(--gold)') +
+      tile(S.correctTotal, 'Correct', 'var(--green)', 'Problems you have answered correctly, all time.') +
+      tile(acc + '%', 'Accuracy', 'var(--blue)', 'The share of your answers that were right.') +
+      tile(ms.done.toLocaleString(), 'Math Solved', 'var(--blue)', 'Different math problems you have solved at least once.') +
+      tile(cs.done.toLocaleString(), 'Chess Solved', 'var(--purple)', 'Different chess puzzles you have solved at least once.') +
+      tile(Object.keys(S.aimeSolved).length, 'AIME Solved', 'var(--orange)', 'Real AIME problems you have solved. Each one is a serious achievement.') +
+      tile(Object.keys(S.matesSolved).length, 'Checkmates', 'var(--red)', 'Checkmate puzzles you have solved.') +
+      tile(S.hardSolved || 0, 'Giant Slays', 'var(--gold)', 'Problems you beat that were rated 300 or more above you.') +
+      tile(S.bestScalp || '–', 'Hardest Solve', 'var(--gold)', 'The rating of the hardest problem you have ever solved.') +
     '</div>' +
     secLab('Dedication') +
     '<div class="statgrid">' +
-      tile(S.streak, 'Day Streak', 'var(--teal)') +
-      tile(S.maxStreak, 'Best Streak', 'var(--teal)') +
-      tile(S.daysActive || 0, 'Days Active', 'var(--teal)') +
-      tile(S.goalDays || 0, 'Daily Goals', 'var(--gold)') +
-      tile(S.dailyCount, 'Dailies Won', 'var(--gold)') +
-      tile(S.bestCombo, 'Best Combo', 'var(--orange)') +
-      tile(S.earlySolves || 0, 'Early Solves', 'var(--muted)') +
-      tile(S.lateSolves || 0, 'Night Solves', 'var(--muted)') +
-      tile(((S.season || {}).xp) || 0, 'Season XP', 'var(--purple)') +
-      tile((function () { const h = Object.values(S.seasonHist || {}); const cur = ((S.season || {}).xp) || 0; return Math.max(cur, h.length ? Math.max.apply(null, h) : 0); })(), 'Best Season', 'var(--purple)') +
+      tile(S.streak, 'Day Streak', 'var(--teal)', 'Days in a row with at least one solve.') +
+      tile(S.maxStreak, 'Best Streak', 'var(--teal)', 'Your longest streak ever.') +
+      tile(S.daysActive || 0, 'Days Active', 'var(--teal)', 'Total days you have trained.') +
+      tile(S.goalDays || 0, 'Daily Goals', 'var(--gold)', 'Days you solved ten or more problems.') +
+      tile(S.dailyCount, 'Dailies Won', 'var(--gold)', 'Daily Challenges you have solved.') +
+      tile(S.bestCombo, 'Best Combo', 'var(--orange)', 'Your longest run of correct answers in a row.') +
+      tile(S.earlySolves || 0, 'Early Solves', 'var(--muted)', 'Problems solved before 8 in the morning.') +
+      tile(S.lateSolves || 0, 'Night Solves', 'var(--muted)', 'Problems solved after 9 at night.') +
+      tile(((S.season || {}).xp) || 0, 'Season XP', 'var(--purple)', 'XP earned this month. It turns into coins when the season ends.') +
+      tile((function () { const h = Object.values(S.seasonHist || {}); const cur = ((S.season || {}).xp) || 0; return Math.max(cur, h.length ? Math.max.apply(null, h) : 0); })(), 'Best Season', 'var(--purple)', 'Your highest season XP ever.') +
     '</div>' +
     secLab('Competition') +
     '<div class="statgrid">' +
-      tile(S.testsTaken || 0, 'Practice Tests', 'var(--teal)') +
-      tile(S.testAce || 0, 'Test Aces', 'var(--gold)') +
-      tile(S.duelsPlayed, 'Duels', 'var(--red)') +
-      tile(S.duelWins, 'Duel Wins', 'var(--red)') +
-      tile(S.gamesPlayed, 'Chess Games', 'var(--green)') +
-      (bestTest ? tile(bestTest.s.split(' / ')[0], 'Best Test Score', 'var(--gold)') : '') +
+      tile(S.testsTaken || 0, 'Practice Tests', 'var(--teal)', 'Full timed practice tests you have finished.') +
+      tile(S.testAce || 0, 'Test Aces', 'var(--gold)', 'Practice tests with an outstanding score.') +
+      tile(S.duelsPlayed, 'Duels', 'var(--red)', 'Math duels played against a friend.') +
+      tile(S.duelWins, 'Duel Wins', 'var(--red)', 'Duels you won.') +
+      tile(S.gamesPlayed, 'Chess Games', 'var(--green)', 'Full chess games finished.') +
+      (bestTest ? tile(bestTest.s.split(' / ')[0], 'Best Test Score', 'var(--gold)', 'Your best score on any practice test.') : '') +
     '</div>' +
     secLab('Classroom') +
     '<div class="statgrid">' +
-      tile(S.asgDone || 0, 'Assignments Done', 'var(--blue)') +
-      tile(S.asgPerfect || 0, 'Perfect Assignments', 'var(--gold)') +
-      tile(S.reviewCleared || 0, 'Reviews Conquered', 'var(--purple)') +
-      tile(earnedUnitCount(), 'Badges', 'var(--pink)') +
+      tile(S.asgDone || 0, 'Assignments Done', 'var(--blue)', 'Teacher assignments you have completed.') +
+      tile(S.asgPerfect || 0, 'Perfect Assignments', 'var(--gold)', 'Assignments with every answer right.') +
+      tile(S.reviewCleared || 0, 'Reviews Conquered', 'var(--purple)', 'Problems you missed once and later solved in Smart Review.') +
+      tile(earnedUnitCount(), 'Badges', 'var(--pink)', 'Badges earned, out of all of them.') +
     '</div>' +
     (Store.persistent ? '' : '<p class="sub" style="margin-top:14px">This viewer cannot save progress between visits. Open the file in a regular browser (double-click it) for progress to be remembered.</p>') +
-    '<div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">' +
-      '<button class="btn gold small" id="studioBtn">Avatar Studio</button>' +
-      '<button class="btn ghost small" id="teachBtn">Switch account</button>' +
-      '<button class="btn ghost small" id="myCodeBtn">My class code</button>' +
-      '<button class="btn ghost small" id="editProfile">Edit name and avatar</button>' +
-      '<button class="btn ghost small" id="pwBtn">Password</button>' +
-      '<button class="btn ghost small" id="backupBtn">Back up progress</button>' +
-      '<button class="btn ghost small" id="logoutBtn">Log out</button>' +
-      '<button class="btn ghost small" id="soundBtn">' + (S.soundOff ? "Sounds: off" : "Sounds: on") + '</button>' +
-      '<button class="btn ghost small" id="motionBtn">' + (S.reduceMotion ? "Animations: off" : "Animations: on") + '</button>' +
-      '<button class="btn ghost small" id="textBtn">' + (S.bigText ? "Text size: large" : "Text size: normal") + '</button>' +
-      '<button class="btn ghost small" id="resetBtn" style="color:var(--red)">Reset all progress</button>' +
+    '<div class="section-label">Settings</div>' +
+    '<div class="setlist">' +
+      setRow("🎨", "Avatar Studio", "Characters, skins, frames and accessories to buy with coins", "studioBtn", "Open", true) +
+      setRow("💾", "Back up progress", "Save a code or file that carries everything to another device", "backupBtn", "Back up") +
+      setRow("🔒", "Password", hasPw ? "This account is locked with a password" : "Keep this account private on a shared device", "pwBtn", hasPw ? "Change" : "Set up") +
+      setRow("🏫", "My class code", "Share it with your teacher to join a class leaderboard", "myCodeBtn", "Show") +
+      setRow("✏️", "Name and avatar", "Change how you appear", "editProfile", "Edit") +
+      setRow("🔊", "Sounds", "Little sounds for right and wrong answers", "soundBtn", S.soundOff ? "Off" : "On") +
+      setRow("✨", "Animations", "Confetti and motion. Turn them off if they distract you", "motionBtn", S.reduceMotion ? "Off" : "On") +
+      setRow("🔠", "Text size", "Make everything a little bigger", "textBtn", S.bigText ? "Large" : "Normal") +
+      setRow("🧭", "Show me around", "Replay the quick tour of the home screen", "tourBtn", "Start") +
+      setRow("👥", "Switch account or log out", "Go back to the list of accounts on this device", "logoutBtn", "Log out") +
+      setRow("⚠️", "Reset all progress", "Erase everything on this account. This cannot be undone", "resetBtn", "Reset", false, true) +
     '</div>'
   );
   document.getElementById("studioBtn").addEventListener("click", showStudio);
@@ -2946,11 +2955,11 @@ function showProfile() {
   document.getElementById("textBtn").addEventListener("click", () => {
     S.bigText = S.bigText ? 0 : 1; save(); applyPrefs(); showProfile();
   });
-  document.getElementById("teachBtn").addEventListener("click", mmLogout);
   document.getElementById("myCodeBtn").addEventListener("click", showLeaderboard);
   document.getElementById("editProfile").addEventListener("click", () => { welcomeRole = "student"; showWelcome(); });
   document.getElementById("pwBtn").addEventListener("click", showPasswordSettings);
   document.getElementById("backupBtn").addEventListener("click", () => showBackupScreen(showProfile));
+  document.getElementById("tourBtn").addEventListener("click", () => { showHome(); setTimeout(startHomeTour, 350); });
   document.getElementById("logoutBtn").addEventListener("click", mmLogout);
   document.getElementById("resetBtn").addEventListener("click", () => {
     askConfirm("Erase everything?", "This permanently deletes all progress, XP, ratings, coins and badges. There is no undo.", "Erase All", () => {
@@ -3022,6 +3031,7 @@ if (typeof katex === "undefined") {
 }
 (function boot() {
   applyPrefs();
+  if (typeof initTooltips === "function") initTooltips();
   if (typeof initPWA === "function") initPWA();
   if (typeof authGate === "function" && authGate()) return;   // account chooser is showing
   const role = Store.get("mm_role", "student");

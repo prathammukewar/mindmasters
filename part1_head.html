@@ -157,6 +157,37 @@ p.sub{color:var(--muted);font-size:14px;line-height:1.5;}
   box-shadow:0 10px 30px rgba(0,0,0,.5);animation:fadeUp .3s ease;
 }
 
+/* ---------- hover explanations ---------- */
+#tipfloat{position:fixed;z-index:400;max-width:260px;background:#0f1117;color:var(--ink);border:1px solid #3a4152;border-radius:10px;padding:8px 11px;font-size:12.5px;line-height:1.45;font-weight:500;box-shadow:0 10px 26px rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .12s;--ax:50%;}
+#tipfloat.show{opacity:1;}
+#tipfloat::after{content:"";position:absolute;left:var(--ax);top:100%;margin-left:-6px;border:6px solid transparent;border-top-color:#3a4152;}
+#tipfloat.below::after{top:auto;bottom:100%;border-top-color:transparent;border-bottom-color:#3a4152;}
+[data-tip]:not(button):not([role=button]):not(input){cursor:help;}
+
+/* ---------- guided tour ---------- */
+.tourov{position:fixed;inset:0;z-index:300;}
+.tourspot{position:fixed;border-radius:14px;box-shadow:0 0 0 9999px rgba(8,10,16,.68);pointer-events:none;transition:left .25s,top .25s,width .25s,height .25s;border:2px solid var(--gold);}
+.tourcard{position:fixed;left:50%;transform:translateX(-50%);width:min(340px,92vw);background:var(--card);border:1px solid var(--gold);border-radius:14px;padding:14px 16px;box-shadow:0 14px 40px rgba(0,0,0,.6);animation:fadeUp .25s ease;}
+.tourcard h3{font-family:var(--display);font-size:17px;margin:2px 0 6px;}
+.tourcard p{font-size:13.5px;line-height:1.5;}
+.tourstep{font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--gold);font-weight:700;}
+.tourrow{display:flex;gap:8px;justify-content:flex-end;margin-top:12px;}
+
+/* ---------- settings list (profile) ---------- */
+.setlist{display:flex;flex-direction:column;gap:8px;}
+.setrow{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px;}
+.setrow .sico{font-size:20px;width:30px;text-align:center;flex-shrink:0;}
+.setrow .stext{flex:1;min-width:0;}
+.setrow .stitle{font-weight:700;font-size:14px;}
+.setrow .ssub{font-size:12px;color:var(--muted);margin-top:1px;line-height:1.4;}
+.setrow .btn.small{flex-shrink:0;}
+.setrow.danger{border-color:#4a2a2a;}
+.setrow.danger .stitle{color:var(--red);}
+
+/* ---------- keyboard hint on the quiz (pointer devices only) ---------- */
+.keyhint{display:none;text-align:center;font-size:11.5px;color:var(--muted);margin-top:8px;}
+@media (hover:hover) and (pointer:fine){.keyhint{display:block;}}
+
 /* ---------- topic list ---------- */
 .backrow{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
 .topiclist{display:grid;gap:11px;}
@@ -606,21 +637,21 @@ table.rpt{width:100%;border-collapse:collapse;margin-top:8px;}
   <div id="topbar" class="hidden" role="banner">
     <div class="brand"><span class="logo"><svg viewBox="0 0 24 24" width="24" height="24"><rect x="1.5" y="1.5" width="21" height="21" rx="5.5" fill="none" stroke="var(--gold)" stroke-width="1.8"/><path d="M6.5 17V8l5.5 6 5.5-6v9" fill="none" stroke="var(--gold)" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>MindMasters</span></div>
     <div class="statchips">
-      <div class="chip lvl"><span id="chipLevel">Lv 1</span></div>
-      <div class="chip xp"><span id="chipXP">0 XP</span></div>
-      <div class="chip streak"><span id="chipStreak">0</span></div>
-      <div class="chip coins"><span id="chipCoins">0 coins</span></div>
+      <div class="chip lvl" data-tip="Your level. Every solved problem earns XP, and enough XP reaches the next level and a new title."><span id="chipLevel">Lv 1</span></div>
+      <div class="chip xp" data-tip="All the XP you have ever earned. Harder problems and combos pay more."><span id="chipXP">0 XP</span></div>
+      <div class="chip streak" data-tip="Days in a row with at least one solve. Miss a day and it resets, unless a freeze saves it."><span id="chipStreak">0</span></div>
+      <div class="chip coins" data-tip="Coins come from solving and from chests. Spend them in the Avatar Studio or on a streak freeze."><span id="chipCoins">0 coins</span></div>
     </div>
   </div>
   <div id="screen-root" role="main" tabindex="-1"></div>
 </div>
 <div id="toasts" role="status" aria-live="polite"></div>
 <div id="bottomnav" class="hidden" role="navigation" aria-label="Main sections">
-  <button data-nav="home"><span class="nico"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V20h13V9.5"/></svg></span>Home</button>
-  <button data-nav="math"><span class="nico"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 5h14M12 5 6.5 19M12 5l5.5 14"/><path d="M8.2 14.5h7.6"/></svg></span>Math</button>
-  <button data-nav="chess"><span class="nico"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 20h8M9 17.5h6M14.5 17.5c1.2-2.4 2-4.6 2-7A6 6 0 0 0 8 8.6c0 1 .5 1.9 1.4 2.4l-1.6 3.3c-.4.9.2 1.7 1.2 1.7"/><circle cx="10.5" cy="7" r=".6" fill="currentColor"/></svg></span>Chess</button>
-  <button data-nav="battle"><span class="nico"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m4 4 12.5 12.5M20 4 7.5 16.5"/><path d="M4 20l3.5-3.5M20 20l-3.5-3.5"/><path d="M5.5 14.5 4 20l5.5-1.5M18.5 14.5 20 20l-5.5-1.5"/></svg></span>Battle</button>
-  <button data-nav="badges"><span class="nico"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="5.5"/><path d="m9 13.5-2 7 5-2.5 5 2.5-2-7"/></svg></span>Badges</button>
-  <button data-nav="profile"><span class="nico"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c1.3-3.4 4.1-5 7.5-5s6.2 1.6 7.5 5"/></svg></span>Profile</button>
+  <button data-nav="home" data-tip="Today's checklist, your arenas and your trophy case"><span class="nico"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.5V20h13V9.5"/></svg></span>Home</button>
+  <button data-nav="math" data-tip="Practice by contest or by topic"><span class="nico"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 5h14M12 5 6.5 19M12 5l5.5 14"/><path d="M8.2 14.5h7.6"/></svg></span>Math</button>
+  <button data-nav="chess" data-tip="Puzzles, drills and full games"><span class="nico"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 20h8M9 17.5h6M14.5 17.5c1.2-2.4 2-4.6 2-7A6 6 0 0 0 8 8.6c0 1 .5 1.9 1.4 2.4l-1.6 3.3c-.4.9.2 1.7 1.2 1.7"/><circle cx="10.5" cy="7" r=".6" fill="currentColor"/></svg></span>Chess</button>
+  <button data-nav="battle" data-tip="Duel a friend at math or play chess head to head"><span class="nico"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m4 4 12.5 12.5M20 4 7.5 16.5"/><path d="M4 20l3.5-3.5M20 20l-3.5-3.5"/><path d="M5.5 14.5 4 20l5.5-1.5M18.5 14.5 20 20l-5.5-1.5"/></svg></span>Battle</button>
+  <button data-nav="badges" data-tip="Everything you have earned so far"><span class="nico"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="5.5"/><path d="m9 13.5-2 7 5-2.5 5 2.5-2-7"/></svg></span>Badges</button>
+  <button data-nav="profile" data-tip="Your stats, rating chart, settings and backups"><span class="nico"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4.5 20c1.3-3.4 4.1-5 7.5-5s6.2 1.6 7.5 5"/></svg></span>Profile</button>
 </div>
 <script>
