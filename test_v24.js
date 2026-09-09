@@ -78,7 +78,7 @@ const path = require('path');
     soundLabel: document.getElementById('soundBtn').textContent,
     soundAria: document.getElementById('soundBtn').getAttribute('aria-label')
   }));
-  (prof.rows === 11 && prof.tiles >= 28 && prof.danger && prof.soundLabel === 'On' && prof.soundAria === 'Sounds: On')
+  (prof.rows === 12 && prof.tiles >= 28 && prof.danger && prof.soundLabel === 'On' && prof.soundAria === 'Sounds: On')
     ? ok('settings list with ' + prof.rows + ' rows and ' + prof.tiles + ' explained stat tiles') : fail('profile: ' + JSON.stringify(prof));
   await page.click('#textBtn');
   await page.waitForTimeout(300);

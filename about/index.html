@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MindMasters Academy</title>
+<meta name="description" content="Free contest math and chess practice for K-8 students: every AMC 8, AMC 10, AMC 12 and AIME problem with official answers, 13,531 chess puzzles, adaptive ratings, and a teacher side for coaches. Works offline on iPad and Chromebook.">
+<link rel="canonical" href="https://prathammukewar.github.io/mindmasters/about/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="MindMasters Academy">
+<meta property="og:description" content="Contest math and chess practice that kids keep coming back to. Every AMC and AIME problem ever published, 13,531 chess puzzles, a rating that climbs. Free, offline, no account.">
+<meta property="og:image" content="https://prathammukewar.github.io/mindmasters/about/img/og.png">
+<meta property="og:url" content="https://prathammukewar.github.io/mindmasters/about/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#12141a">
+<link rel="icon" href="../icons/icon-192.png">
+<link rel="apple-touch-icon" href="../icons/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+:root{
+  --bg:#12141a;--bg2:#171a21;--card:#1b1f27;--card2:#222731;--ink:#e9e6dd;--muted:#8b93a3;--line:#2c323d;
+  --gold:#d9a441;--green:#7fb08a;--red:#c96f6f;--blue:#7d9bc4;--purple:#9299c9;--teal:#7dae9f;
+  --display:'Space Grotesk',system-ui,sans-serif;--radius:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;line-height:1.55;font-size:16.5px}
+a{color:var(--gold)}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.wrap{max-width:1040px;margin:0 auto;padding:0 22px}
+h1,h2,h3{font-family:var(--display);font-weight:700;text-wrap:balance;letter-spacing:-.2px}
+h2{font-size:30px;margin-bottom:10px}
+h3{font-size:18px;margin-bottom:4px}
+p{max-width:64ch}
+.eyebrow{font-family:var(--display);font-size:11.5px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:10px}
+.muted{color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:11px;padding:12px 22px;font-weight:700;font-size:15px;text-decoration:none;border:1px solid #4a5470;background:#39415a;color:var(--ink);font-family:inherit;cursor:pointer;transition:background .12s,border-color .12s}
+.btn:hover{background:#424b68}
+.btn.gold{background:var(--gold);border-color:var(--gold);color:#1c1508}
+.btn.gold:hover{background:#e6b355}
+.btn.big{font-size:17px;padding:15px 30px}
+
+/* top bar */
+.top{position:sticky;top:0;z-index:20;background:rgba(18,20,26,.88);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:16px;height:62px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:16px;color:var(--ink);text-decoration:none}
+.top nav{display:flex;gap:18px;margin-left:auto;font-size:14px}
+.top nav a{color:var(--muted);text-decoration:none;font-weight:600}
+.top nav a:hover{color:var(--ink)}
+.top .btn{white-space:nowrap;margin-left:auto}
+.top nav + .btn{margin-left:0}
+.brand{white-space:nowrap}
+@media (max-width:640px){.top nav{display:none}.top .btn{padding:10px 16px;font-size:14px}.brand{font-size:15px}}
+
+/* hero */
+.hero{padding:56px 0 40px;display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+.hero h1{font-size:46px;line-height:1.08;margin-bottom:16px}
+.hero .lead{font-size:18px;color:var(--muted);margin-bottom:24px}
+.hero .cta{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.hero .fine{font-size:13px;color:var(--muted);margin-top:14px}
+@media (max-width:820px){.hero{grid-template-columns:1fr;padding-top:36px}.hero h1{font-size:34px}}
+
+/* the try-one problem */
+.problem{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;border-left:3px solid var(--blue)}
+.problem .src{font-family:var(--display);font-size:11.5px;letter-spacing:1.6px;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:8px}
+.problem .q{font-weight:600;font-size:16.5px;margin-bottom:14px}
+.choices{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.choice{background:var(--card2);border:2px solid var(--line);border-radius:12px;padding:11px 6px;font-weight:700;color:var(--ink);font-family:inherit;cursor:pointer;font-size:14px;transition:border-color .1s,transform .1s}
+.choice:hover{border-color:var(--blue);transform:translateY(-1px)}
+.choice.correct{border-color:var(--green);background:#0d3321}
+.choice.wrong{border-color:var(--red);background:#3b1215}
+.choice:disabled{cursor:default}
+.verdict{margin-top:12px;font-size:14px;min-height:22px;color:var(--muted)}
+.verdict b{color:var(--green)}
+.verdict.no b{color:var(--red)}
+
+/* facts strip */
+.facts{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:8px 0 56px}
+.fact{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 12px;text-align:center}
+.fact .n{font-family:var(--display);font-size:24px;font-weight:700;color:var(--gold);font-variant-numeric:tabular-nums}
+.fact .l{font-size:12px;color:var(--muted);margin-top:2px;line-height:1.3}
+@media (max-width:820px){.facts{grid-template-columns:repeat(3,1fr)}}
+
+/* sections */
+section{padding:0 0 60px}
+.steps{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start}
+.step{display:flex;gap:14px}
+.step .k{font-family:var(--display);font-size:13px;font-weight:700;color:var(--gold);border:1px solid var(--line);border-radius:999px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--card)}
+.step p{color:var(--muted);font-size:15px}
+.shot{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--card)}
+.shot img{display:block;width:100%;height:auto}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:center}
+.two.flip .shot{order:-1}
+@media (max-width:820px){.steps,.two{grid-template-columns:1fr}.two.flip .shot{order:0}}
+.phoneshot{max-width:300px;margin:0 auto;border-radius:22px;border:1px solid var(--line);overflow:hidden;background:var(--card)}
+.phoneshot img{display:block;width:100%}
+
+/* audience blocks */
+.split{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media (max-width:820px){.split{grid-template-columns:1fr}}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px}
+.panel.parents{border-top:3px solid var(--teal)}
+.panel.coaches{border-top:3px solid var(--purple)}
+.panel ul{padding-left:18px;color:var(--muted);font-size:15px;display:flex;flex-direction:column;gap:7px;margin:12px 0 16px}
+.panel li b{color:var(--ink);font-weight:600}
+.docs{display:flex;gap:10px;flex-wrap:wrap}
+
+/* faq */
+details{border-bottom:1px solid var(--line);padding:14px 0}
+summary{cursor:pointer;font-weight:700;font-size:16px;list-style:none;display:flex;justify-content:space-between;gap:12px}
+summary::after{content:"+";color:var(--gold);font-family:var(--display);font-size:20px;line-height:1}
+details[open] summary::after{content:"\2013"}
+details p{color:var(--muted);margin-top:8px;font-size:15px}
+
+footer{border-top:1px solid var(--line);padding:26px 0 44px;font-size:13.5px;color:var(--muted)}
+footer p{max-width:none}
+footer .row{display:flex;gap:18px;flex-wrap:wrap;margin-top:8px}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="./"><svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><rect x="1.5" y="1.5" width="21" height="21" rx="5.5" fill="none" stroke="#d9a441" stroke-width="1.6"/><path d="M6.5 17V8l5.5 6 5.5-6v9" fill="none" stroke="#d9a441" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>MindMasters Academy</a>
+    <nav aria-label="Sections"><a href="#how">How it works</a><a href="#parents">Parents</a><a href="#coaches">Coaches</a><a href="#faq">Questions</a></nav>
+    <a class="btn gold" href="../">Open app</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div>
+      <div class="eyebrow">Free for K-8 students</div>
+      <h1>Contest math and chess practice that kids keep coming back to.</h1>
+      <p class="lead">Every AMC 8, AMC 10, AMC 12 and AIME problem ever published, with the official answers, plus 13,531 chess puzzles. A rating that climbs as you win, a streak to protect, and a chest to open each day.</p>
+      <div class="cta">
+        <a class="btn gold big" href="../">Start training</a>
+        <a class="btn" href="#coaches">I coach a class</a>
+      </div>
+      <p class="fine">No account, no ads, and nothing leaves the device. Works on the family iPad and on school Chromebooks, even without a connection.</p>
+    </div>
+    <div class="problem" id="tryone">
+      <div class="src">Try one. 2008 AMC 8, problem 10</div>
+      <div class="q">The average age of the 6 people in Room A is 40. The average age of the 4 people in Room B is 25. If the two groups are combined, what is the average age of all the people?</div>
+      <div class="choices" role="group" aria-label="Answer choices">
+        <button class="choice" data-v="32.5">A<br>32.5</button>
+        <button class="choice" data-v="33">B<br>33</button>
+        <button class="choice" data-v="33.5">C<br>33.5</button>
+        <button class="choice" data-v="34">D<br>34</button>
+        <button class="choice" data-v="35">E<br>35</button>
+      </div>
+      <div class="verdict" id="verdict" aria-live="polite">Pick an answer. The app has 13,584 more like it.</div>
+    </div>
+  </section>
+
+  <div class="facts" aria-label="By the numbers">
+    <div class="fact"><div class="n">13,585</div><div class="l">real AMC and AIME problems</div></div>
+    <div class="fact"><div class="n">13,531</div><div class="l">chess puzzles, rated</div></div>
+    <div class="fact"><div class="n">191</div><div class="l">official practice tests</div></div>
+    <div class="fact"><div class="n">$0</div><div class="l">now and later</div></div>
+    <div class="fact"><div class="n">0</div><div class="l">accounts, ads or trackers</div></div>
+    <div class="fact"><div class="n">Offline</div><div class="l">after the first visit</div></div>
+  </div>
+
+  <section id="how">
+    <div class="eyebrow">How a session works</div>
+    <h2>Ten problems, picked for exactly where you are.</h2>
+    <div class="steps" style="margin-top:22px">
+      <div>
+        <div class="step"><div class="k">1</div><div><h3>Tap Train</h3><p>The app looks at your rating and pulls ten problems you have not solved yet, from every topic in the arena, matched to your level. A session is never too easy or too hard.</p></div></div>
+        <div class="step" style="margin-top:18px"><div class="k">2</div><div><h3>Answer, then see the real solution</h3><p>Every contest problem shows its official answer and links to the full worked solution on the AoPS wiki. Miss one and it comes back tomorrow in Smart Review.</p></div></div>
+        <div class="step" style="margin-top:18px"><div class="k">3</div><div><h3>Watch the rating move</h3><p>Math and chess each have their own rating. Beat a hard problem and it jumps. The profile keeps a chart of every rated game, so a kid can see the line go up.</p></div></div>
+        <div class="step" style="margin-top:18px"><div class="k">4</div><div><h3>Come back tomorrow</h3><p>A streak, a daily challenge, monthly seasons, badges, and a mystery chest that only opens after the day's checklist. The same loop that keeps adults on language apps, aimed at contest prep.</p></div></div>
+      </div>
+      <div class="shot"><img src="img/quiz.png" alt="A real 2008 AMC 8 problem inside the app, with A to E answer buttons, the problem's rating, and the difficulty for this player" loading="lazy"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="two">
+      <div>
+        <div class="eyebrow">The home screen</div>
+        <h2>One place for today.</h2>
+        <p class="muted" style="margin-top:8px">The Today card lists what unlocks the chest. Below it, each arena has a Train button and a running count of everything solved so far.</p>
+      </div>
+      <div class="shot"><img src="img/home.png" alt="The home screen: level and XP bar, the Today checklist, and the math and chess arena cards with Train buttons" loading="lazy"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="two flip">
+      <div class="shot"><img src="img/chart.png" alt="The Rating Journey chart, with a rising math line and a chess line, one point per rated game" loading="lazy"></div>
+      <div>
+        <div class="eyebrow">Progress you can see</div>
+        <h2>A line that goes up.</h2>
+        <p class="muted" style="margin-top:8px">Ratings work like chess ratings: an 800 is a beginner, a 1400 is a strong middle schooler, and every solve moves the number a little. Kids check it the way adults check a step counter.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="split">
+      <div class="panel parents" id="parents">
+        <div class="eyebrow">For parents</div>
+        <h3>Safe to hand to a nine-year-old.</h3>
+        <ul>
+          <li><b>Nothing leaves the device.</b> There is no sign-up, no server, no analytics, and no ads. Progress is saved in the browser on that device.</li>
+          <li><b>Real problems only.</b> Every math problem is an actual past contest problem with its official answer. Nothing is invented.</li>
+          <li><b>Install it like an app.</b> On an iPad or iPhone, open the site in Safari, tap Share, then Add to Home Screen. On a Chromebook or laptop, Chrome offers Install in the address bar.</li>
+          <li><b>Keep a backup.</b> Because progress lives on one device, the profile screen makes a backup code that can be restored on another device or after a browser reset.</li>
+          <li><b>Several kids, one iPad.</b> Each child gets their own account and, if they want one, a password.</li>
+        </ul>
+        <a class="btn gold" href="../">Set up a student</a>
+      </div>
+      <div class="panel coaches" id="coaches">
+        <div class="eyebrow">For coaches and teachers</div>
+        <h3>A class, without the admin.</h3>
+        <ul>
+          <li><b>Assignments by code.</b> Build a set from any topic or contest and hand students a short code. They paste it in and play.</li>
+          <li><b>Results come back the same way.</b> Students send a submission code. It fills your roster, marks missing work, and shows which problem tripped the most kids.</li>
+          <li><b>Reports you can print.</b> A class report and per-student pages, plus CSV export for your own spreadsheet.</li>
+          <li><b>Optional live leaderboard.</b> A free Firebase Class Cloud, set up from inside the app in a few minutes, keeps a class scoreboard live.</li>
+          <li><b>Practice tests with real timing.</b> 191 full contests with official scoring, so a Saturday mock exam takes no preparation.</li>
+        </ul>
+        <div class="docs">
+          <a class="btn" href="../docs/MindMasters_CoachQuickStart.pdf">Coach quick start (PDF)</a>
+          <a class="btn" href="../docs/MindMasters_Pitch.pdf">One-page overview (PDF)</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="two">
+      <div>
+        <div class="eyebrow">On a phone</div>
+        <h2>Small screen, same app.</h2>
+        <p class="muted" style="margin-top:8px">Everything fits a phone: the board, the diagrams, the practice tests. A kid can do the daily challenge in the car.</p>
+      </div>
+      <div class="phoneshot"><img src="img/phone.png" alt="The home screen on a phone" loading="lazy"></div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="eyebrow">Questions</div>
+    <h2>Things people ask.</h2>
+    <div style="margin-top:14px">
+      <details><summary>Is it really free?</summary><p>Yes. There is no paid tier, no trial, and no upsell. It is a single web page that runs in the browser.</p></details>
+      <details><summary>Which contests are covered?</summary><p>Every AMC 8 from 1999 to 2025, every AMC 10 and AMC 12 from 2000 to 2025, and every AIME from 1983 to 2025, with official answers. The topic arenas draw on the same problems, sorted by subject, plus school-level practice for younger students. Chess covers openings, tactics, endgames and strategy, with puzzles rated from beginner to grandmaster.</p></details>
+      <details><summary>Where is my child's progress saved?</summary><p>In the browser on the device they use. Nothing is uploaded anywhere. If they switch devices or the browser is reset, the profile screen makes a backup code that restores everything.</p></details>
+      <details><summary>Does it work without internet?</summary><p>Yes. After the first visit the whole app is stored on the device, and once it is installed on the home screen it opens like any other app, connection or not.</p></details>
+      <details><summary>Can I use it with a class?</summary><p>Yes. Create a teacher account, build an assignment, and share the code. Students do not need accounts on any server; results come back as codes or, optionally, through a free class leaderboard you set up yourself.</p></details>
+      <details><summary>Who made this?</summary><p>Pratham Mukewar, who coaches North South Foundation math and CheckMates chess. It started as a tool for his own students. The code is public on GitHub.</p></details>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>MindMasters Academy is free to use. AMC and AIME problems are copyright of the Mathematical Association of America and appear here for practice. Chess puzzle positions are drawn from public game records.</p>
+    <div class="row"><a href="../">Open the app</a><a href="https://github.com/prathammukewar/mindmasters">Source on GitHub</a><a href="../docs/MindMasters_Demo_Script.pdf">Demo script (PDF)</a></div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var right = "34";
+  var buttons = document.querySelectorAll("#tryone .choice");
+  var verdict = document.getElementById("verdict");
+  buttons.forEach(function (b) {
+    b.addEventListener("click", function () {
+      var v = b.getAttribute("data-v");
+      buttons.forEach(function (x) { x.disabled = true; if (x.getAttribute("data-v") === right) x.classList.add("correct"); });
+      if (v === right) {
+        verdict.className = "verdict";
+        verdict.innerHTML = "<b>Correct.</b> Room A has 6 people with a total age of 240, Room B has 4 with a total of 100, so 340 divided by 10 is 34. The app scores you, adjusts your rating, and links the full solution.";
+      } else {
+        b.classList.add("wrong");
+        verdict.className = "verdict no";
+        verdict.innerHTML = "<b>Not this time.</b> The totals are 240 and 100, so the combined average is 340 divided by 10, which is 34. In the app this problem would come back tomorrow in Smart Review.";
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>

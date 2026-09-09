@@ -987,6 +987,8 @@ function showWelcome() {
     '<h1>MindMasters Academy</h1>' +
     '<p class="sub" style="margin-top:8px">Train your brain in <b>math</b> and <b>chess</b>. Earn a rating, keep a streak, climb the leaderboard.</p>' +
     '<div class="programs"><div class="prog">North South Foundation · Math</div><div class="prog">CheckMates · Chess</div></div>' +
+    (authActive() ? '' : '<p class="sub trustline">It is free, with no ads and no sign-up, and nothing leaves this device. A competition coach built it.' +
+      (/^https?:$/.test(location.protocol) ? ' <a href="about/" id="aboutLink">What is MindMasters?</a>' : '') + '</p>') +
     (authActive() ? '' :
     '<div class="roleseg">' +
       '<button class="rolebtn' + (welcomeRole === "student" ? " sel" : "") + '" data-role="student">I am a student</button>' +
@@ -1651,6 +1653,7 @@ function showResults() {
       tomorrowHookHtml() +
       '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">' +
         (Q.isDaily || Q.isReview ? '' : '<button class="btn gold" id="retryBtn">Train Again</button>') +
+        '<button class="btn ghost" id="shareBtn" data-tip="Send this result to a friend or a parent">Share</button>' +
         (Q.isReview && reviewDue().length ? '<button class="btn gold" id="moreRevBtn">Review More</button>' : '') +
         '<button class="btn ghost" id="contBtn">Done</button>' +
       '</div>' +
@@ -1660,6 +1663,7 @@ function showResults() {
   if (r) r.addEventListener("click", () => { if (Q.isTrain) startTrain(Q.track); else startQuiz(Q.topicId); });
   const mr = document.getElementById("moreRevBtn");
   if (mr) mr.addEventListener("click", startReview);
+  document.getElementById("shareBtn").addEventListener("click", () => shareText(resultShareText(), "My MindMasters session"));
   document.getElementById("contBtn").addEventListener("click", () => {
     if (Q.isDaily || Q.isReview) showHome();
     else if (Q.isTrain) showTrack(Q.track);
@@ -2939,6 +2943,7 @@ function showProfile() {
       setRow("✨", "Animations", "Confetti and motion. Turn them off if they distract you", "motionBtn", S.reduceMotion ? "Off" : "On") +
       setRow("🔠", "Text size", "Make everything a little bigger", "textBtn", S.bigText ? "Large" : "Normal") +
       setRow("🧭", "Show me around", "Replay the quick tour of the home screen", "tourBtn", "Start") +
+      setRow("💌", "Invite a friend", "Send a friend the link, with your Mind Rating if you have one", "inviteBtn", "Share") +
       setRow("👥", "Switch account or log out", "Go back to the list of accounts on this device", "logoutBtn", "Log out") +
       setRow("⚠️", "Reset all progress", "Erase everything on this account. This cannot be undone", "resetBtn", "Reset", false, true) +
     '</div>'
@@ -2960,6 +2965,7 @@ function showProfile() {
   document.getElementById("pwBtn").addEventListener("click", showPasswordSettings);
   document.getElementById("backupBtn").addEventListener("click", () => showBackupScreen(showProfile));
   document.getElementById("tourBtn").addEventListener("click", () => { showHome(); setTimeout(startHomeTour, 350); });
+  document.getElementById("inviteBtn").addEventListener("click", () => shareText(inviteShareText(), "MindMasters Academy"));
   document.getElementById("logoutBtn").addEventListener("click", mmLogout);
   document.getElementById("resetBtn").addEventListener("click", () => {
     askConfirm("Erase everything?", "This permanently deletes all progress, XP, ratings, coins and badges. There is no undo.", "Erase All", () => {

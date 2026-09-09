@@ -159,3 +159,29 @@ function maybeHomeTour() {
   if (navigator.webdriver) return;   // automated browsers skip the guided tour
   setTimeout(() => { if (document.querySelector(".todaycard") && !TOUR) startHomeTour(); }, 700);
 }
+
+
+/* ---- sharing: a result, a rating, or an invitation ---- */
+function appShareUrl() {
+  if (/^https?:$/.test(location.protocol)) return location.origin + location.pathname.replace(/[^/]*$/, "");
+  return "https://prathammukewar.github.io/mindmasters/";
+}
+function shareText(text, title) {
+  const done = () => toast("\u2713", "Copied. Paste it in a message to share.");
+  if (navigator.share) {
+    navigator.share({ title: title || "MindMasters Academy", text }).catch(() => {});
+    return;
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, () => fallbackCopy(text, done));
+  else fallbackCopy(text, done);
+}
+function resultShareText() {
+  const total = Q.entries.length;
+  const track = Q.track === "math" ? "math" : "chess";
+  return "I just solved " + Q.correctThisRun + " of " + total + " in a MindMasters Academy " + track + " session. My " + track + " rating is " + eloOf(Q.track) + ". Free contest practice: " + appShareUrl();
+}
+function inviteShareText() {
+  const r = mindRating();
+  return "Come train with me on MindMasters Academy: real AMC and AIME problems, chess puzzles, and a rating that climbs." +
+    (r.ready ? " My Mind Rating is " + r.val + "." : "") + " It is free: " + appShareUrl();
+}

@@ -4,6 +4,8 @@ Math and chess training for K-8 competition students, in one HTML file that
 runs entirely in the browser.
 
 **Live at [prathammukewar.github.io/mindmasters](https://prathammukewar.github.io/mindmasters/).**
+There is an overview for parents and coaches at
+[prathammukewar.github.io/mindmasters/about](https://prathammukewar.github.io/mindmasters/about/).
 
 I coach North South Foundation math and CheckMates chess, and I built this for
 my students. Anyone is welcome to use it.
@@ -62,9 +64,10 @@ python3 assemble.py
 ```
 npm i playwright
 npx playwright install chromium
-node test_v12.js && node test_v12b.js && node test_v13.js && node test_v17.js && node test_v18.js && node test_v20.js && node test_v21.js && node test_v22.js && node test_v23.js
+node test_v12.js && node test_v12b.js && node test_v13.js && node test_v17.js && node test_v18.js && node test_v20.js && node test_v21.js && node test_v22.js && node test_v23.js && node test_v24.js && node test_v25.js
 ```
 
-Nine Playwright suites cover the quiz engine, ratings, chess puzzles,
+Eleven Playwright suites cover the quiz engine, ratings, chess puzzles,
 retention systems, teacher tools, login, training sessions, backups, the
-offline service worker, and accessibility.
+offline service worker, accessibility, the hover explanations and tour, and
+the overview page and sharing.
