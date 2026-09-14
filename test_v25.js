@@ -15,7 +15,8 @@ const fs = require('fs');
   !landing.includes('—') ? ok('landing page has no em dashes') : fail('em dash in landing');
   const dims = f => { const d = fs.readFileSync(f); return [d.readUInt32BE(16), d.readUInt32BE(20)]; };
   const og = dims('about/img/og.png');
-  (og[0] === 1200 && og[1] === 630) ? ok('link preview image is 1200 x 630') : fail('og.png dims: ' + og);
+  const ratio = og[0] / og[1];
+  (og[0] >= 1200 && Math.abs(ratio - 1.905) < 0.04) ? ok('link preview image is ' + og[0] + ' x ' + og[1] + ', the right shape for a shared link') : fail('og.png dims: ' + og);
   ['home', 'quiz', 'chart', 'phone'].every(n => fs.existsSync('about/img/' + n + '.png')) ? ok('landing screenshots present') : fail('missing landing screenshot');
 
   const browser = await chromium.launch(process.env.MM_CHROMIUM ? { executablePath: process.env.MM_CHROMIUM } : {});

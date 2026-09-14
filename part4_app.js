@@ -987,8 +987,8 @@ function showWelcome() {
     '<h1>MindMasters Academy</h1>' +
     '<p class="sub" style="margin-top:8px">Train your brain in <b>math</b> and <b>chess</b>. Earn a rating, keep a streak, climb the leaderboard.</p>' +
     '<div class="programs"><div class="prog">North South Foundation · Math</div><div class="prog">CheckMates · Chess</div></div>' +
-    (authActive() ? '' : '<p class="sub trustline">It is free, with no ads and no sign-up, and nothing leaves this device. A competition coach built it.' +
-      (/^https?:$/.test(location.protocol) ? ' <a href="about/" id="aboutLink">What is MindMasters?</a>' : '') + '</p>') +
+    (authActive() ? '' : '<p class="sub trustline">I coach math and chess, and I built this for my own students. It is free, and nothing you do here leaves this device.' +
+      (/^https?:$/.test(location.protocol) ? ' <a href="about/" id="aboutLink">More about it</a>' : '') + '</p>') +
     (authActive() ? '' :
     '<div class="roleseg">' +
       '<button class="rolebtn' + (welcomeRole === "student" ? " sel" : "") + '" data-role="student">I am a student</button>' +
