@@ -8,9 +8,14 @@ const fs = require('fs');
 const path = require('path');
 
 const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.webmanifest': 'application/manifest+json', '.png': 'image/png', '.css': 'text/css', '.txt': 'text/plain' };
+let serveNextVersion = false;   // flipped later to imitate a new deploy
 const server = http.createServer((req, res) => {
   let p = req.url.split('?')[0];
   if (p === '/') p = '/index.html';
+  if (p === '/sw.js' && serveNextVersion) {
+    res.writeHead(200, { 'Content-Type': 'text/javascript' });
+    res.end(fs.readFileSync(path.join(__dirname, 'sw.js'), 'utf8').replace(/mm-[0-9a-f]{10}/, 'mm-0000000002')); return;
+  }
   const file = path.join(__dirname, p);
   if (!file.startsWith(__dirname) || !fs.existsSync(file) || !fs.statSync(file).isFile()) {
     res.writeHead(404); res.end('not found'); return;
@@ -32,6 +37,8 @@ const server = http.createServer((req, res) => {
   const fail = m => { console.log('FAIL:', m); process.exitCode = 1; };
 
   // ---- first load over http: the service worker installs and takes control ----
+  let navs = 0;
+  page.on('framenavigated', f => { if (f === page.mainFrame()) navs++; });
   await page.goto(BASE);
   await page.waitForTimeout(1500);
   const sw = await page.evaluate(async () => {
@@ -49,9 +56,10 @@ const server = http.createServer((req, res) => {
     const reqs = (await c.keys()).map(r => new URL(r.url).pathname);
     return reqs.sort();
   });
-  ['/', '/index.html', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png']
-    .every(p => cached.some(u => u === p || u.endsWith(p)))
-    ? ok('app shell fully cached') : fail('cached: ' + JSON.stringify(cached));
+  (['/', '/manifest.webmanifest', '/icons/icon-192.png', '/icons/icon-512.png'].every(p => cached.includes(p)) && !cached.includes('/index.html'))
+    ? ok('app cached once, with its manifest and icons') : fail('cached: ' + JSON.stringify(cached));
+  await page.waitForTimeout(2000);
+  navs === 1 ? ok('the first install does not reload the page under the visitor') : fail('page navigated ' + navs + ' times on a first visit');
 
   // ---- onboard a student and make some rated history ----
   await page.fill('#nameInput', 'Backup'); await page.click('#startBtn');
@@ -105,6 +113,9 @@ const server = http.createServer((req, res) => {
   await page.waitForTimeout(1500);
   const off = await page.evaluate(() => ({ name: S.name, screen: document.getElementById('screen-root').textContent.slice(0, 200) }));
   (off.name === 'Backup') ? ok('offline reload boots the app with progress intact') : fail('offline: ' + JSON.stringify(off).slice(0, 150));
+  await page.goto(BASE + 'index.html'); await page.waitForTimeout(1200);
+  (await page.evaluate(() => typeof S !== 'undefined' && S.name)) === 'Backup' ? ok('index.html opens offline from the same single copy') : fail('index.html failed offline');
+  await page.goto(BASE); await page.waitForTimeout(1000);
   await context.setOffline(false);
 
   // ---- wiped device: restore from the welcome screen ----
@@ -151,6 +162,19 @@ const server = http.createServer((req, res) => {
   await page.waitForTimeout(400);
   const errTxt = await page.evaluate(() => document.getElementById('rsErr').textContent);
   errTxt.length > 0 ? ok('damaged code rejected: "' + errTxt.slice(0, 40) + '…"') : fail('tampered code accepted');
+
+  // ---- a new deploy: update bar, one tap, exactly one reload, old cache gone ----
+  await page.goto(BASE); await page.waitForTimeout(1200);
+  serveNextVersion = true;
+  const navsBefore = navs;
+  await page.evaluate(async () => { const r = await navigator.serviceWorker.getRegistration(); await r.update(); });
+  await page.waitForSelector('#updbar', { timeout: 30000 });
+  ok('a waiting new version shows the update bar');
+  await page.click('#updGo');
+  await page.waitForTimeout(3000);
+  const upd = await page.evaluate(async () => ({ keys: await caches.keys(), name: S.name, bar: !!document.getElementById('updbar') }));
+  (navs === navsBefore + 1 && upd.keys.length === 1 && upd.keys[0] === 'mm-0000000002' && upd.name === 'Backup' && !upd.bar)
+    ? ok('Update now reloads once onto the new version, old cache deleted, progress intact') : fail('update: ' + JSON.stringify(upd) + ' navs+' + (navs - navsBefore));
 
   errors.length === 0 ? ok('zero console errors') : fail('console errors: ' + errors.join(' | '));
   await browser.close();

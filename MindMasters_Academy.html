@@ -4262,11 +4262,17 @@ function pwaEligible() {
     (location.protocol === "https:" || location.hostname === "localhost" || location.hostname === "127.0.0.1");
 }
 
+let PWA_UPDATE_ASKED = false;
 function initPWA() {
   if (!pwaEligible()) return;
+  /* On a first visit the worker installs in the background and takes control
+     quietly. Reloading then would wipe whatever the visitor is typing, so the
+     page reloads only when a worker was already in charge (a real update) or
+     the visitor pressed Update now. */
+  const hadController = !!navigator.serviceWorker.controller;
   let reloaded = false;
   navigator.serviceWorker.addEventListener("controllerchange", () => {
-    if (reloaded) return;
+    if (reloaded || !(hadController || PWA_UPDATE_ASKED)) return;
     reloaded = true;
     location.reload();
   });
@@ -4294,6 +4300,7 @@ function showUpdateBar(worker) {
   document.body.appendChild(bar);
   document.getElementById("updGo").addEventListener("click", () => {
     document.getElementById("updGo").disabled = true;
+    PWA_UPDATE_ASKED = true;
     worker.postMessage("SKIP_WAITING");
   });
   document.getElementById("updLater").addEventListener("click", () => bar.remove());
