@@ -168,20 +168,98 @@ function appShareUrl() {
 }
 function shareText(text, title) {
   const done = () => toast("\u2713", "Copied. Paste it in a message to share.");
-  if (navigator.share) {
-    navigator.share({ title: title || "MindMasters Academy", text }).catch(() => {});
+  const copy = () => {
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, () => fallbackCopy(text, done));
+    else fallbackCopy(text, done);
+  };
+  if (typeof navigator.share === "function") {
+    // closing the share sheet is a choice; any other failure falls back to copying
+    navigator.share({ title: title || "MindMasters Academy", text }).catch(e => { if (!e || e.name !== "AbortError") copy(); });
     return;
   }
-  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, () => fallbackCopy(text, done));
-  else fallbackCopy(text, done);
+  copy();
 }
 function resultShareText() {
   const total = Q.entries.length;
   const track = Q.track === "math" ? "math" : "chess";
-  return "I just solved " + Q.correctThisRun + " of " + total + " in a MindMasters Academy " + track + " session. My " + track + " rating is " + eloOf(Q.track) + ". Free contest practice: " + appShareUrl();
+  const base = "I just solved " + Q.correctThisRun + " of " + total + " in a MindMasters Academy " + track + " session. My " + track + " rating is " + eloOf(Q.track) + ".";
+  const ch = sessionChallenge();
+  if (ch) return base + " I got " + ch.score + " of the first five. Same five for you, see if you can beat that: " + deepLinkFor("c", ch.code);
+  return base + " Free contest practice: " + appShareUrl();
 }
 function inviteShareText() {
   const r = mindRating();
   return "Come train with me on MindMasters Academy: real AMC and AIME problems, chess puzzles, and a rating that climbs." +
     (r.ready ? " My Mind Rating is " + r.val + "." : "") + " It is free: " + appShareUrl();
+}
+
+/* ---- links that open straight into an assignment or a challenge ----
+   A link is the app address plus #a=<assignment code> or #c=<challenge code>.
+   The code rides in the fragment, so it never reaches a server. It waits in
+   sessionStorage through sign-up or login, and opens from the home screen. */
+function deepLinkFor(kind, code) { return appShareUrl() + "#" + kind + "=" + encodeURIComponent(code); }
+function captureDeepLink() {
+  const m = String(location.hash || "").match(/^#(a|c)=(.+)$/);
+  if (!m) return false;
+  let code;
+  try { code = decodeURIComponent(m[2]); } catch (e) { return false; }
+  _ssSet("mm_link", m[1] + ":" + code);
+  try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+  return true;
+}
+function pendingDeepLink() {
+  const v = _ssGet("mm_link");
+  return v && v.length > 2 ? { kind: v[0], code: v.slice(2) } : null;
+}
+function deepLinkNote(where) {
+  const link = pendingDeepLink();
+  if (!link) return "";
+  const next = where === "login" ? "Choose your account to open it." : "Enter your name and it opens right away.";
+  let msg = "You opened a MindMasters link. " + next;
+  if (link.kind === "a") {
+    const a = parseAssignmentCode(link.code);
+    if (a) msg = "Your teacher sent you an assignment: <b>" + esc(a.title) + "</b>. " + next;
+  } else {
+    const p = parseChallengeCode(link.code);
+    if (p) msg = "<b>" + esc(p.name) + "</b> challenged you to five problems. " + next;
+  }
+  return '<div class="linknote" id="linkNote">' + msg + '</div>';
+}
+function consumeDeepLink() {
+  const link = pendingDeepLink();
+  if (!link || !S.name) return false;
+  _ssDel("mm_link");
+  if (link.kind === "a") {
+    const a = parseAssignmentCode(link.code);
+    if (!a) { toast("!", "That assignment link did not work. Ask your teacher to send it again."); return false; }
+    const fresh = acceptAssignment(a, "code");
+    toast("\u2713", fresh ? "Assignment added: " + esc(a.title) + "." : "You already have this assignment. Here it is.");
+    showAssignmentPlay(a.id);
+    return true;
+  }
+  if (!parseChallengeCode(link.code)) { toast("!", "That challenge link did not work. Ask your friend to send it again."); return false; }
+  acceptChallengeInput(link.code);
+  return true;
+}
+function initDeepLinks() {
+  captureDeepLink();
+  window.addEventListener("hashchange", () => {
+    if (!captureDeepLink()) return;
+    if (typeof S === "undefined" || !S.name || Store.get("mm_role", "student") === "teacher") return;
+    if (document.querySelector(".quizhead")) { toast("i", "Link saved. It opens when you are back on the home screen."); return; }
+    showHome();
+  });
+}
+/* the first five problems of a finished math session, packed as a challenge a friend can play */
+function sessionChallenge() {
+  if (!Q || Q.track !== "math" || Q.isDaily || Q.isReview || Q.isAssignment || Q.isChallenge) return null;
+  const five = Q.entries.filter(e => typeof e.ok === "boolean").slice(0, 5);
+  if (five.length < 5) return null;
+  const refs = five.map(e => [e.tid || Q.topicId, e.gi]);
+  if (!refs.every(r => refItem(r))) return null;
+  const score = five.filter(e => e.ok).length;
+  S.challenges = S.challenges || {};
+  const key = challengeKey(refs);
+  if (!S.challenges[key]) { S.challenges[key] = { vs: "", mine: score, theirs: null, total: 5, d: todayStr() }; save(); }
+  return { code: challengeCode((S.name || "Player").replace(/\|/g, " ").slice(0, 20), refs, S.challenges[key].mine), score: S.challenges[key].mine };
 }

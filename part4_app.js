@@ -994,11 +994,13 @@ function showWelcome() {
       '<button class="rolebtn' + (welcomeRole === "student" ? " sel" : "") + '" data-role="student">I am a student</button>' +
       '<button class="rolebtn' + (welcomeRole === "teacher" ? " sel" : "") + '" data-role="teacher">I am a teacher</button>' +
     '</div>') +
+    (!authActive() && typeof deepLinkNote === "function" ? deepLinkNote("welcome") : '') +
     '<input id="nameInput" maxlength="20" placeholder="Your name" autocomplete="off">' +
     (welcomeRole === "student" ? '<div class="avatar-row">' + AVATAR_CHOICES().map(a =>
       '<button class="avatar-pick' + (a === pickedAvatar ? ' sel' : '') + '" data-av="' + a + '">' + a + '</button>').join("") + '</div>' : '') +
     pwFieldsHtml(welcomeRole) +
     '<button class="btn gold" id="startBtn" style="font-size:16px;padding:13px 34px">' + (authActive() ? "Save" : welcomeRole === "teacher" ? "Create Teacher Account" : "Start Training") + '</button>' +
+    (!authActive() && welcomeRole === "student" ? '<div style="margin-top:10px" id="pwToggleRow"><button class="btn ghost small" id="pwToggle">Add a password (optional)</button></div>' : '') +
     (Object.keys(authUsers()).length && !authActive()
       ? '<div style="margin-top:12px"><button class="btn ghost small" id="backLogin">← Back to accounts</button></div>'
       : (!authActive() ? '<div style="margin-top:12px"><button class="btn ghost small" id="welcomeRestore">Moving devices? Restore a backup</button></div>' : '')) +
@@ -1011,6 +1013,12 @@ function showWelcome() {
   attachPwUx();
   const bl = document.getElementById("backLogin");
   if (bl) bl.addEventListener("click", showLoginScreen);
+  const pt = document.getElementById("pwToggle");
+  if (pt) pt.addEventListener("click", () => {
+    document.getElementById("pwSetup").classList.remove("hidden");
+    document.getElementById("pwToggleRow").remove();
+    document.getElementById("pwInput").focus();
+  });
   const wr = document.getElementById("welcomeRestore");
   if (wr) wr.addEventListener("click", () => showRestoreScreen(showWelcome));
   document.querySelectorAll(".avatar-pick").forEach(b => b.addEventListener("click", () => {
@@ -1035,6 +1043,7 @@ function showWelcome() {
       setRole("student");
       touchStreak(); save();
       toast("★", "Welcome, " + esc(nm) + ". Your journey begins.");
+      if (!S.onboarded && typeof pendingDeepLink === "function" && pendingDeepLink()) { S.onboarded = 1; save(); }   // a link is waiting: go straight to it
       if (!S.onboarded) startOnboarding(); else showHome();
     };
     if (authActive()) { authUpdateName(nm, welcomeRole === "student" ? pickedAvatar : null); proceed(); return; }
@@ -1153,6 +1162,7 @@ function showHome() {
   bindTodayCard();
   const hv = document.getElementById("heroAv");
   if (hv) { hv.addEventListener("click", showStudio); hv.setAttribute("data-tip", "Tap to visit the Avatar Studio"); }
+  if (typeof consumeDeepLink === "function" && consumeDeepLink()) return;   // a shared link opens from here
   if (typeof maybeHomeTour === "function") maybeHomeTour();
 }
 
@@ -1494,6 +1504,7 @@ function grade(good, item, extra) {
   const fb = document.getElementById("feedback");
   if (!fb) return;
   const gi = Q.entries[Q.i].gi;
+  Q.entries[Q.i].ok = !!good;   // remembered so a finished session can become a challenge
   const secondTry = (Q.tries || 0) > 0;
   // rating update: first-try answers count fully; second-try solves leave the rating unchanged;
   // review sessions never move the rating (those problems' solutions were already shown once)
@@ -3038,12 +3049,18 @@ if (typeof katex === "undefined") {
 (function boot() {
   applyPrefs();
   if (typeof initTooltips === "function") initTooltips();
+  if (typeof initDeepLinks === "function") initDeepLinks();
   if (typeof initPWA === "function") initPWA();
   if (typeof authGate === "function" && authGate()) return;   // account chooser is showing
   const role = Store.get("mm_role", "student");
-  if (role === "teacher" && loadTS().name) { showTeacherHome(); return; }
+  if (role === "teacher" && loadTS().name) {
+    showTeacherHome();
+    if (typeof pendingDeepLink === "function" && pendingDeepLink()) toast("i", "That link is for students. Log out and choose a student account to open it.");
+    return;
+  }
   if (S.name) {
     touchStreak();
+    if (!S.onboarded && typeof pendingDeepLink === "function" && pendingDeepLink()) { S.onboarded = 1; save(); }
     if (!S.onboarded && typeof startOnboarding === "function") startOnboarding();
     else showHome();
   } else { showWelcome(); }

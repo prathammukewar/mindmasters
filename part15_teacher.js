@@ -365,6 +365,7 @@ function showAssignment(cid, aid) {
     '<div class="card" style="padding:14px 18px">' +
       '<b>Assignment code' + tip("Students paste this code in their Assignments screen. If the class is cloud linked they receive it automatically instead.") + '</b>' +
       '<div class="mycode" style="margin-top:8px">' + assignmentCode(cls, a) + '</div>' +
+      '<button class="btn gold small" id="copyAsgLink" style="margin-top:9px;margin-right:8px" data-tip="A student who taps the link lands straight in this assignment, even if they have never opened the app">Share link</button>' +
       '<button class="btn small" id="copyAsg" style="margin-top:9px">Copy code</button>' +
       '<button class="btn ghost small" id="refreshAsg" style="margin-top:9px;margin-left:8px">New version, fresh problems' +
         '</button>' + tip("Builds a brand new assignment with different problems from the same topics and difficulty range. Perfect for a weekly routine.", true) +
@@ -403,6 +404,8 @@ function showAssignment(cid, aid) {
   );
   document.getElementById("backBtn").addEventListener("click", () => showClass(cid));
   document.getElementById("refreshAsg").addEventListener("click", () => refreshAssignment(cid, aid));
+  document.getElementById("copyAsgLink").addEventListener("click", () =>
+    shareText("MindMasters assignment: " + a.title + (a.due ? ", due " + a.due : "") + ". Tap to open it: " + deepLinkFor("a", assignmentCode(cls, a)), a.title));
   document.getElementById("copyAsg").addEventListener("click", () => {
     const code = assignmentCode(cls, a);
     const done = () => toast("✓", "Code copied.");

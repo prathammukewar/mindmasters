@@ -197,6 +197,17 @@ p.sub{color:var(--muted);font-size:14px;line-height:1.5;}
 .keyhint{display:none;text-align:center;font-size:11.5px;color:var(--muted);margin-top:8px;}
 @media (hover:hover) and (pointer:fine){.keyhint{display:block;}}
 
+/* ---------- first-load screen: plain HTML and CSS, shown while the app downloads, replaced by the first real screen ---------- */
+.bootload{text-align:center;padding:20vh 20px 0;}
+.bootload h1{font-family:var(--display);font-size:24px;margin-top:14px;}
+.bootload p{color:var(--muted);font-size:14px;line-height:1.5;max-width:300px;margin:10px auto 0;}
+.bootbar{width:200px;height:4px;border-radius:99px;background:var(--card2);overflow:hidden;margin:22px auto 0;}
+.bootbar div{width:40%;height:100%;border-radius:99px;background:var(--gold);animation:bootslide 1.25s ease-in-out infinite;}
+@keyframes bootslide{from{transform:translateX(-110%)}to{transform:translateX(270%)}}
+.bootload .bootslow{opacity:0;animation:bootshow .4s ease 40s forwards;}
+@keyframes bootshow{to{opacity:1}}
+.linknote{border:1px solid var(--gold);background:#221d10;border-radius:12px;padding:10px 14px;font-size:13.5px;line-height:1.45;max-width:420px;margin:12px auto 0;text-align:left;}
+
 /* ---------- topic list ---------- */
 .backrow{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
 .topiclist{display:grid;gap:11px;}
@@ -652,7 +663,7 @@ table.rpt{width:100%;border-collapse:collapse;margin-top:8px;}
       <div class="chip coins" data-tip="Coins come from solving and from chests. Spend them in the Avatar Studio or on a streak freeze."><span id="chipCoins">0 coins</span></div>
     </div>
   </div>
-  <div id="screen-root" role="main" tabindex="-1"></div>
+  <div id="screen-root" role="main" tabindex="-1"><div class="bootload" role="status"><svg viewBox="0 0 24 24" width="56" height="56" aria-hidden="true"><rect x="1.5" y="1.5" width="21" height="21" rx="5.5" fill="none" stroke="#d9a441" stroke-width="1.6"/><path d="M6.5 17V8l5.5 6 5.5-6v9" fill="none" stroke="#d9a441" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg><h1>MindMasters Academy</h1><p>Getting 13,585 problems ready. The first visit can take a little while. After that it opens right away, even with no internet.</p><div class="bootbar"><div></div></div><p class="bootslow">Still loading? A slow connection can take a minute. If nothing changes, check your internet and reload the page.</p></div></div>
 </div>
 <div id="toasts" role="status" aria-live="polite"></div>
 <div id="bottomnav" class="hidden" role="navigation" aria-label="Main sections">

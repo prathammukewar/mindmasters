@@ -6,7 +6,7 @@ It's free and it's at [prathammukewar.github.io/mindmasters](https://prathammuke
 
 ## The problems are real ones
 
-Every AMC 8 back to 1999, every AMC 10 and 12 back to 2000, every AIME back to 1983. Official answers, the original diagrams, and a link to the AoPS solution on each problem. 13,585 of them, and not one is invented, because a made-up "AMC-style" question teaches a kid to expect the wrong thing in November.
+Every AMC 8 back to 1999, every AMC 10 and 12 back to 2000, every AIME back to 1983. Official answers, the original diagrams, and a link to the AoPS solution on each problem. 13,585 of them, and not one is invented, because a made-up "AMC-style" question teaches a kid to expect the wrong thing on contest day.
 
 Chess is 13,531 rated puzzles and an engine that plays a real game, so the same account does tactics on Tuesday and a full pass-and-play match on Wednesday.
 
@@ -18,7 +18,7 @@ Ten problems, chosen against your rating, pulled from every topic at once instea
 
 ## Handing it to a class
 
-Build an assignment, read out the code, and students paste it in. They send back a submission code when they're done, which fills in your roster, flags whoever skipped it, and shows which problem tripped the most kids. Nobody makes an account and nothing needs a connection. If you'd rather have a live leaderboard there's an optional free Firebase setup, explained inside the app. `docs/` has a quick start and a one-pager you can hand to a coordinator.
+Build an assignment and drop the link in the class group chat. A kid who taps it lands on problem one, even if they've never opened the app. They send back a submission code when they're done, which fills in your roster, flags whoever skipped it, and shows which problem tripped the most kids. Nobody makes an account and nothing needs a connection. If you'd rather have a live leaderboard there's an optional free Firebase setup, explained inside the app. `docs/` has a quick start and a one-pager you can hand to a coordinator.
 
 ## Editing it
 
@@ -32,10 +32,14 @@ The whole app is one HTML file with every problem, diagram and font inlined. Tha
 
 ```
 npm i playwright && npx playwright install chromium
-node test_v12.js && node test_v12b.js && node test_v13.js && node test_v17.js && node test_v18.js && node test_v20.js && node test_v21.js && node test_v22.js && node test_v23.js && node test_v24.js && node test_v25.js
+node test_v12.js && node test_v12b.js && node test_v13.js && node test_v17.js && node test_v18.js && node test_v20.js && node test_v21.js && node test_v22.js && node test_v23.js && node test_v24.js && node test_v25.js && node test_v26.js
 ```
 
+If Playwright's own browser isn't installed, point the suites at Chrome: `MM_CHROMIUM="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"`.
+
 ## What isn't done
+
+The first visit is slow. It's 6 MB over the wire and about fourteen seconds on an ordinary phone connection, with a loading screen where there used to be nothing. Splitting the problem archive out of the first download is the real fix.
 
 Progress lives in one browser on one device. There's a backup code that carries an account somewhere else, but that's a workaround for the real fix, which is accounts that sync, and I haven't built that yet.
 
@@ -43,4 +47,4 @@ The bigger gap is that nobody has used this for a whole season. I know the ratin
 
 ---
 
-AMC and AIME problems are copyright the Mathematical Association of America and appear here for practice. Chess positions come from public game records. MIT licensed.
+AMC and AIME problems are copyright the Mathematical Association of America and appear here for practice. Chess positions come from public game records.

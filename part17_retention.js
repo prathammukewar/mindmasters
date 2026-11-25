@@ -573,9 +573,10 @@ function finishChallenge() {
       '<div class="card results">' +
         '<div class="num" style="font-size:44px;font-weight:700;color:var(--gold)">' + myScore + ' / ' + total + '</div>' +
         '<h2>Your challenge is ready</h2>' +
-        '<div class="score">Send this code to a friend. When they send back their reply code, paste it in Friend Challenge to see who won.</div>' +
+        '<div class="score">Send the link to a friend. They play the same five problems, and their reply shows you who won. The code below works too, if you are offline.</div>' +
         '<div class="mycode" style="text-align:left;margin-top:12px">' + code + '</div>' +
         '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px">' +
+          '<button class="btn gold small" id="shareChal">Share link</button>' +
           '<button class="btn small" id="copyChal">Copy code</button>' +
           '<button class="btn ghost small" id="chalBack">Done</button>' +
         '</div>' +
@@ -586,6 +587,8 @@ function finishChallenge() {
       if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(code).then(done).catch(() => fallbackCopy(code, done));
       else fallbackCopy(code, done);
     });
+    document.getElementById("shareChal").addEventListener("click", () =>
+      shareText("I scored " + myScore + " of " + total + " on these five MindMasters problems. Same five for you, see if you can beat it: " + deepLinkFor("c", code), "MindMasters challenge"));
     document.getElementById("chalBack").addEventListener("click", showChallengeHub);
   }
 }
@@ -605,7 +608,7 @@ function showChallengeCompare(rec, coinsWon, replyCode) {
       (replyCode ? '<div class="mycode" style="text-align:left;margin-top:12px">' + replyCode + '</div>' +
         '<p class="sub" style="margin-top:6px">Send this reply code back so they see the result too.</p>' : '') +
       '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:12px">' +
-        (replyCode ? '<button class="btn small" id="copyReply">Copy reply code</button>' : '') +
+        (replyCode ? '<button class="btn gold small" id="shareReply">Send reply</button><button class="btn small" id="copyReply">Copy reply code</button>' : '') +
         '<button class="btn ghost small" id="chalBack">Done</button>' +
       '</div>' +
     '</div>'
@@ -616,6 +619,9 @@ function showChallengeCompare(rec, coinsWon, replyCode) {
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(replyCode).then(done).catch(() => fallbackCopy(replyCode, done));
     else fallbackCopy(replyCode, done);
   });
+  const sr = document.getElementById("shareReply");
+  if (sr) sr.addEventListener("click", () =>
+    shareText("I scored " + rec.mine + " of " + (rec.total || 5) + " on your MindMasters challenge. Tap to see who won: " + deepLinkFor("c", replyCode), "MindMasters challenge"));
   document.getElementById("chalBack").addEventListener("click", showChallengeHub);
 }
 

@@ -56,7 +56,7 @@ const fs = require('fs');
   (await page.$('#shareBtn')) ? ok('results screen offers Share') : fail('no Share button on results');
   const txt = await page.evaluate(() => resultShareText());
   (/solved 9 of 10/.test(txt) && /math rating is \d+/.test(txt) && /mindmasters/.test(txt)) ? ok('share text: "' + txt.slice(0, 60) + '…"') : fail('share text: ' + txt);
-  await page.evaluate(() => { delete navigator.share; });
+  await page.evaluate(() => { Object.defineProperty(navigator, 'share', { configurable: true, value: undefined }); });
   await page.click('#shareBtn');
   await page.waitForTimeout(500);
   const toastTxt = await page.evaluate(() => document.getElementById('toasts').textContent);

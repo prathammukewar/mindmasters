@@ -246,6 +246,7 @@ function showLoginScreen() {
     '<div class="biglogo"><svg viewBox="0 0 24 24" width="64" height="64"><rect x="1.5" y="1.5" width="21" height="21" rx="5.5" fill="none" stroke="var(--gold)" stroke-width="1.6"/><path d="M6.5 17V8l5.5 6 5.5-6v9" fill="none" stroke="var(--gold)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>' +
     '<h1>MindMasters Academy</h1>' +
     '<p class="sub" style="margin-top:8px">Who is training today?</p>' +
+    (typeof deepLinkNote === "function" ? deepLinkNote("login") : "") +
     '<div class="logingrid">' +
       users.map(u =>
         '<div class="logincard" role="button" tabindex="0" data-uid="' + u.id + '" aria-label="Open ' + esc(u.name) + ', ' + (u.role === "teacher" ? "teacher" : "student") + (u.hash ? ", password protected" : "") + '">' +
@@ -333,7 +334,7 @@ function showLoginPw(uid) {
 /* ---- password fields on the account creation screen ---- */
 function pwFieldsHtml(role) {
   if (authActive()) return "";   // editing an existing account: password managed in settings
-  return '<div class="pwsetup">' +
+  return '<div class="pwsetup' + (role === "teacher" ? "" : " hidden") + '" id="pwSetup">' +
     '<div class="pwrow"><input type="password" class="lbinput" id="pwInput" placeholder="' + (role === "teacher" ? "Password (required)" : "Password (optional)") + '" autocomplete="off" style="margin:0;flex:1">' +
     '<button class="btn ghost small pweye" id="pwEye1" title="Show password">👁</button></div>' +
     '<div class="pwmeter"><div id="pwBar"></div></div><div id="pwLabel" class="pwlabel"></div>' +
